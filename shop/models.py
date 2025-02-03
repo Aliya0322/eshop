@@ -7,6 +7,12 @@ class ProductManager(models.Manager):
     def in_stock(self):
         return self.get_queryset().filter(stock__gt=0)
 
+    def order_by_price_desc(self):
+        return self.get_queryset().order_by('-price')
+
+    def order_by_price_asc(self):
+        return self.get_queryset().order_by('price')
+
 
 class Product(models.Model):
     title = models.CharField(max_length=255)
@@ -15,7 +21,7 @@ class Product(models.Model):
     stock = models.IntegerField()
     attributes = models.ManyToManyField('Attribute')
 
-    object = ProductManager()
+    objects = ProductManager()
 
 class ProductImage(models.Model):
     image = models.ImageField()
