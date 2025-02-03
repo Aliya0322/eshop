@@ -9,19 +9,7 @@ from shop.models import (ProductImage, Product, Attribute)
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('title', 'price', 'stock', 'images', 'get_attributes')
-
-    @admin.display(description="Изображение товара")
-    def images(self, obj: Product):
-        return list(obj.productimage_set.values_list('image', flat=True))
-
-    @admin.display(description="Свойства")
-    def get_attributes(self, obj: Product):
-        return list(obj.attributes.values_list('name', flat=True))
-
-    def get_queryset(self, request):
-        qs = super().get_queryset(request)
-        return qs.prefetch_related('productimage_set')
+    list_display = ('title', 'price', 'stock')
 
 
 @admin.register(ProductImage)
