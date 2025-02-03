@@ -3,6 +3,7 @@ import uuid
 from django.db import models
 from django.contrib.auth.models import User
 
+
 class ProductManager(models.Manager):
     def in_stock(self):
         return self.get_queryset().filter(stock__gt=0)
@@ -24,11 +25,11 @@ class Product(models.Model):
     objects = ProductManager()
 
     class Meta:
-        indexes = [models.Index(fields=['title'])]
+        indexes = [models.Index(fields=['title']),
+                   models.Index(fields=['price'])]
         db_table = 'product'
         verbose_name = 'Товар'
         verbose_name_plural = 'Товары'
-
 
 
 class ProductImage(models.Model):
@@ -38,6 +39,7 @@ class ProductImage(models.Model):
     class Meta:
         verbose_name = 'Изображение товара'
         verbose_name_plural = 'Изображение товаров'
+
 
 class Attribute(models.Model):
     name = models.CharField(max_length=255)
