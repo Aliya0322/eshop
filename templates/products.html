@@ -13,10 +13,10 @@
         <ul>
             {% for product in products %}
                 <li>
-                    <h3>{{ product.title }}</h3>  <!-- Название товара -->
-                    <p><strong>Описание:</strong> {{ product.description }}</p>  <!-- Описание -->
-                    <p><strong>Цена:</strong> {{ product.price }} руб.</p>  <!-- Цена -->
-                    <p><strong>Остаток:</strong> {{ product.stock }} шт.</p>  <!-- Остаток -->
+                    <h3>{{ product.title }}</h3>
+                    <p><strong>Описание:</strong> {{ product.description }}</p>
+                    <p><strong>Цена:</strong> {{ product.price }} руб.</p>
+                    <p><strong>Остаток:</strong> {{ product.stock }} шт.</p>
                 </li>
                 <hr>
             {% endfor %}

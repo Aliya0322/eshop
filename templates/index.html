@@ -11,8 +11,8 @@
     <hr>
     <p>Название: {{ product.title }}</p>
     <p>Описание: {{ product.description }}</p>
-    <p>Цена: {{ product.price }}</p>
-    <p style="{% if product.stock == 0 %}color: red;{% endif %}">Наличие: {{ product.stock }}</p>
+    <p>Цена: {{ product.price }} руб.</p>
+    <p style="{% if product.stock == 0 %}color: red;{% endif %}">Наличие: {{ product.stock }} шт.</p>
     <p>Свойства:</p>
     <ul>
         {% for attribute in product.attributes.all %}
