@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Список товаров</title>
+</head>
+<body>
+<h1>Список товаров</h1>
+
+    <p>Текущее время: {{ current_time }}</p> <!-- Отображение текущего времени -->
+
+    {% if products %}
+        <ul>
+            {% for product in products %}
+                <li>
+                    <h3>{{ product.title }}</h3>  <!-- Название товара -->
+                    <p><strong>Описание:</strong> {{ product.description }}</p>  <!-- Описание -->
+                    <p><strong>Цена:</strong> {{ product.price }} руб.</p>  <!-- Цена -->
+                    <p><strong>Остаток:</strong> {{ product.stock }} шт.</p>  <!-- Остаток -->
+                </li>
+                <hr>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Товары отсутствуют.</p>
+    {% endif %}
+
+</body>
+</html>
