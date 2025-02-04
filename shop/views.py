@@ -14,3 +14,7 @@ def main_page(request: HttpRequest):
         titles +=title.encode('utf-8')+b"\n"
     print(f"{titles.decode("utf-8")=}")
     return HttpResponse(titles)
+
+def all_products(request):
+    products = Product.objects.all()  # Получаем все объекты модели Product
+    return render(request, 'products_list.html', {'products': products})
