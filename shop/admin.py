@@ -20,7 +20,7 @@ def set_zero_stock(modeladmin, request, queryset):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    search_fields = ('title',)
+    search_fields = ('title', 'description',)
     list_filter = ('attributes', ProductStockFilter,)
     list_display = ('title', 'price', 'stock')
     actions = (set_zero_stock,)
