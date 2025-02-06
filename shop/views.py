@@ -31,7 +31,7 @@ def registration_view(request: HttpRequest):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return redirect("main-page")
+            return redirect("all-products")
     form = CustomUserCreationForm
     return render(request, 'registration.html',
                   context={"form": form})

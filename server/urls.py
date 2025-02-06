@@ -20,7 +20,6 @@ from django.urls import path
 
 from django.contrib import admin
 from django.urls import path
-from tomlkit import document
 
 from shop.views import main_page, all_products, registration_view
 from django.conf import settings
@@ -30,7 +29,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', main_page, name = 'main-page'),
-    path('products/', all_products),
+    path('products/', all_products, name = 'all-products'),
     path('register/', registration_view, name = 'registration-view')
 ]
 
