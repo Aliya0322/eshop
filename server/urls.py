@@ -22,15 +22,16 @@ from django.contrib import admin
 from django.urls import path
 from tomlkit import document
 
-from shop.views import main_page, all_products
+from shop.views import main_page, all_products, register_page
 from django.conf import settings
 from django.conf.urls.static import static
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', main_page),
+    path('', main_page, name = 'main-page'),
     path('products/', all_products),
+    path('register/', register_page, name = 'register-page')
 ]
 
 if settings.DEBUG:

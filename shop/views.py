@@ -4,6 +4,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpRequest
 from shop.models import Product
 from datetime import datetime
+from django.contrib.auth.forms import UserCreationForm
 
 
 def main_page(request: HttpRequest):
@@ -21,3 +22,8 @@ def all_products(request):
         'products': products,
         'current_time': current_time
     })
+
+def register_page(request: HttpRequest):
+    form = UserCreationForm
+    return render(request, 'registration.html',
+                  context={"form": form})

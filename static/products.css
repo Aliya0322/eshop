@@ -1,0 +1,24 @@
+img {
+    width: 150px !important;
+}
+
+.products {
+display: flex;
+flex-direction: row;
+justify-content: center;
+}
+.card {
+margin: 20px;
+}
+
+.navbar-brand {
+font-size: 50px;
+}
+
+.mb-lg-0 {
+font-size: 30px;
+}
+
+.all_products {
+font-size: 40px;
+}
