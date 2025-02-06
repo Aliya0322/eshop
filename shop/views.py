@@ -2,6 +2,7 @@ from itertools import product
 
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpRequest
+from django.contrib.auth import login
 from shop.models import Product
 from datetime import datetime
 from shop.forms import CustomUserCreationForm
@@ -24,11 +25,12 @@ def all_products(request):
         'current_time': current_time
     })
 
-def register_page(request: HttpRequest):
+def registration_view(request: HttpRequest):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
-            form.save()
+            user = form.save()
+            login(request, user)
             return redirect("main-page")
     form = CustomUserCreationForm
     return render(request, 'registration.html',
