@@ -1,0 +1,16 @@
+.form-control {
+width: 300px !important;
+}
+.registration {
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+height: 60%;
+}
+
+.btn-success{
+margin: 10px;
+}
+
+
