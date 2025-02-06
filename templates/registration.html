@@ -4,7 +4,7 @@
 <link rel="stylesheet" href="{% static 'auth.css' %}">
 {% endblock styles %}
 {% block content %}
-<div class="registration">
+<div class="auth">
 <form method="POST">
     {% csrf_token %}
 {{ form }}

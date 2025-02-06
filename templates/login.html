@@ -1,0 +1,21 @@
+{% extends 'common.html' %}
+{% block styles %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'auth.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="auth">
+    {% for message in messages %}
+    <div class="alert alert-danger">
+        {{ message }}
+    </div>
+    {% endfor %}
+
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}  <!-- Это может улучшить отображение формы, если нужно -->
+        <button type="submit" class="btn btn-success">Войти</button>
+    </form>
+</div>
+{% endblock %}
