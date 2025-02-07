@@ -58,6 +58,6 @@ def login_page(request: HttpRequest):
     form = UserAuthForm()
     return render(request, "login.html", context={'form': form})
 
-def logout_page(request: HttpRequest):
+def logout_user(request: HttpRequest):
     logout(request)
     return redirect('main-page')
