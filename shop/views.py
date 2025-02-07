@@ -27,12 +27,13 @@ def all_products(request):
         'current_time': current_time
     })
 
+
 class RegistrationView(View):
     @staticmethod
     def get(request: HttpRequest):
-        form = CustomUserCreationForm
-        return render(request, 'registration.html',
-                      context={"form": form})
+        form = CustomUserCreationForm()
+        return render(request, 'registration.html', context={"form": form})
+
     @staticmethod
     def post(request: HttpRequest):
         form = CustomUserCreationForm(request.POST)
@@ -40,9 +41,7 @@ class RegistrationView(View):
             user = form.save()
             login(request, user)
             return redirect("all-products")
-        form = CustomUserCreationForm
-        return render(request, 'registration.html',
-                      context={"form": form})
+        return render(request, 'registration.html', context={"form": form})
 
 
 class LoginView(View):
