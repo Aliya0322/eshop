@@ -1,8 +1,6 @@
-from itertools import product
-
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpRequest
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
 
 
@@ -57,6 +55,9 @@ def login_page(request: HttpRequest):
         else:
             messages.error(request, form.errors)
 
-
-    form = UserAuthForm
+    form = UserAuthForm()
     return render(request, "login.html", context={'form': form})
+
+def logout_page(request: HttpRequest):
+    logout(request)
+    return redirect('main-page')

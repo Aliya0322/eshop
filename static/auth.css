@@ -1,6 +1,7 @@
-.auth .form-control {
+.form-control {
 width: 300px !important;
 }
+
 .auth {
 display: flex;
 flex-direction: column;
