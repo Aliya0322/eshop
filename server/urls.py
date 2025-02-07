@@ -21,7 +21,7 @@ from django.urls import path
 from django.contrib import admin
 from django.urls import path
 
-from shop.views import main_page, all_products, registration_view, login_page, logout_user
+from shop.views import main_page, all_products, registration_view, LoginView, logout_user
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -31,7 +31,7 @@ urlpatterns = [
     path('', main_page, name = 'main-page'),
     path('products/', all_products, name = 'all-products'),
     path('register/', registration_view, name = 'registration-view'),
-    path('login/', login_page, name='login-page'),
+    path('login/', LoginView.as_view(), name='login-page'),
     path('logout/', logout_user, name='logout-page')
 ]
 

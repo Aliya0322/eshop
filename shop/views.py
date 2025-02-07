@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse, HttpRequest
+from django.http import HttpRequest
 from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
+from django.views import View
 
 
 from shop.models import Product
@@ -26,20 +27,32 @@ def all_products(request):
         'current_time': current_time
     })
 
-def registration_view(request: HttpRequest):
-    if request.method == 'POST':
+class RegistrationView(View):
+    @staticmethod
+    def get(request: HttpRequest):
+        form = CustomUserCreationForm
+        return render(request, 'registration.html',
+                      context={"form": form})
+    @staticmethod
+    def post(request: HttpRequest):
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)
             return redirect("all-products")
-    form = CustomUserCreationForm
-    return render(request, 'registration.html',
-                  context={"form": form})
+        form = CustomUserCreationForm
+        return render(request, 'registration.html',
+                      context={"form": form})
 
 
-def login_page(request: HttpRequest):
-    if request.method == 'POST':
+class LoginView(View):
+    @staticmethod
+    def get(request: HttpRequest):
+        form = UserAuthForm()
+        return render(request, "login.html", context={'form': form})
+
+    @staticmethod
+    def post(request: HttpRequest):
         form = UserAuthForm(request.POST)
         if form.is_valid():
             username = form.cleaned_data['username']  # Используем [] для доступа к данным
@@ -55,8 +68,9 @@ def login_page(request: HttpRequest):
         else:
             messages.error(request, form.errors)
 
-    form = UserAuthForm()
-    return render(request, "login.html", context={'form': form})
+        form = UserAuthForm()
+        return render(request, "login.html", context={'form': form})
+
 
 def logout_user(request: HttpRequest):
     logout(request)
