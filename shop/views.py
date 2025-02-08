@@ -1,31 +1,43 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
 from django.http import HttpRequest
 from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
 from django.views import View
-
+from django.views.generic import ListView
+from urllib3 import request
 
 from shop.models import Product
 from datetime import datetime
 from shop.forms import CustomUserCreationForm, UserAuthForm
 
 
+class MainView(ListView):
+    template_name = 'index.html'
+    model = Product
+    context_object_name = 'products'
+    extra_context = {"is_authenticated": request.user.is_authenticated}
+    ordering = ['-title']
 
-def main_page(request: HttpRequest):
-    products = Product.objects.all()
-    return render(request,
-                  'index.html',
-                  context={"products": products, "is_authenticated": request.user.is_authenticated})
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        data["is_authenticated"] = self.request.user.is_authenticated
+        return data
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        return qs.prefetch_related("productimage_set")
 
 
-def all_products(request):
-    products = Product.objects.all()
-    current_time = datetime.now()
+class AllProductsView(ListView):
+    model = Product
+    template_name = 'products.html'
+    context_object_name = 'products'
 
-    return render(request, 'products.html', {
-        'products': products,
-        'current_time': current_time
-    })
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['current_time'] = datetime.now()
+        return context
 
 
 class RegistrationView(View):
