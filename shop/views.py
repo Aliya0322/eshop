@@ -4,8 +4,8 @@ from django.http import HttpRequest
 from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
 from django.views import View
-from django.views.generic import ListView
-from urllib3 import request
+from django.views.generic import ListView, DetailView
+
 
 from shop.models import Product
 from datetime import datetime
@@ -16,17 +16,15 @@ class MainView(ListView):
     template_name = 'index.html'
     model = Product
     context_object_name = 'products'
-    extra_context = {"is_authenticated": request.user.is_authenticated}
-    ordering = ['-title']
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        return qs.prefetch_related("productimage_set")
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         data["is_authenticated"] = self.request.user.is_authenticated
         return data
-
-    def get_queryset(self):
-        qs = super().get_queryset()
-        return qs.prefetch_related("productimage_set")
 
 
 class AllProductsView(ListView):
@@ -86,3 +84,13 @@ class LoginView(View):
 def logout_user(request: HttpRequest):
     logout(request)
     return redirect('main-page')
+
+
+class ProductDetailView(View):
+    model = Product
+    template_name = 'product_detail.html'
+    context_object_name = 'product'
+
+    def get_object(self):
+        qs=super().get_queryset()
+        return qs.prefetch_related("productimage_set")

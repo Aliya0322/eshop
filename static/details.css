@@ -1,0 +1,22 @@
+.product-container {
+display: flex;
+flex-direction: row;
+align-items: center;
+width: 100%;
+}
+
+.image-container {
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+width: 100%;
+}
+
+.info-container {
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+width: 100%;
+}

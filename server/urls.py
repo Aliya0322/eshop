@@ -21,18 +21,20 @@ from django.urls import path
 from django.contrib import admin
 from django.urls import path
 
-from shop.views import MainView, AllProductsView, LoginView, logout_user, RegistrationView
+from shop.views import MainView, AllProductsView, LoginView, logout_user, RegistrationView, ProductDetailView
 from django.conf import settings
 from django.conf.urls.static import static
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', MainView.as_view, name='main-page'),
+    path('', MainView.as_view(), name='main-page'),
     path('products/', AllProductsView.as_view(), name='all-products'),
     path('register/', RegistrationView.as_view(), name='registration-view'),
     path('login/', LoginView.as_view(), name='login-page'),
     path('logout/', logout_user, name='logout-page'),
+    path('products/<int:pk>', ProductDetailView.as_view(), name='product-detail'),
+
 ]
 
 
