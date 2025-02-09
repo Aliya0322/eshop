@@ -4,6 +4,47 @@
 <link rel="stylesheet" href="{% static 'details.css' %}">
 {% endblock styles %}
 {% block content %}
+<script>
+window.addEventListener('load', function() {
+    let toCartBtn = document.getElementById("add-to-cart");
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.startsWith(name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    const csrftoken = getCookie('csrftoken');
+
+    toCartBtn.addEventListener("click", function(event) {
+        event.preventDefault(); // Отменяем стандартное действие кнопки
+
+        fetch(`{% url "cart" %}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFTOKEN": csrftoken
+            },
+            body: JSON.stringify({
+                "productId": {{ product.id }}
+            })
+        })
+        .then(response => response.json())
+        .then(data => console.log(data))
+        .catch(error => console.error("Ошибка:", error));
+    });
+});
+</script>
+
 <div class="product-container">
     <div class="image-container">
         {% for image in product.productimage_set.all %}
@@ -11,10 +52,11 @@
         {% endfor %}
     </div>
     <div class="info-container">
-        <h1 class="{{ product.title }}"></h1>
+        <h1>{{ product.title }}</h1>  <!-- Исправлено -->
         <p>{{ product.description }}</p>
-        <h3>{{ product.price }}</h3>
-        <a href="#" type="button" class="btn btn-danger">Добавить в корзину</a>
+        <h3>{{ product.price }} руб.</h3>
+        <button type="button" class="btn btn-danger" id="add-to-cart">Добавить в корзину</button> <!-- Исправлено -->
     </div>
 </div>
 {% endblock content %}
+

@@ -21,7 +21,13 @@ from django.urls import path
 from django.contrib import admin
 from django.urls import path
 
-from shop.views import MainView, AllProductsView, LoginView, logout_user, RegistrationView, ProductDetailView
+from shop.views import (MainView,
+                        AllProductsView,
+                        LoginView,
+                        logout_user,
+                        RegistrationView,
+                        ProductDetailView,
+                        CartView)
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -34,6 +40,7 @@ urlpatterns = [
     path('login/', LoginView.as_view(), name='login-page'),
     path('logout/', logout_user, name='logout-page'),
     path('products/<int:pk>', ProductDetailView.as_view(), name='product-detail'),
+    path('cart/', CartView.as_view(), name="cart"),
 
 ]
 

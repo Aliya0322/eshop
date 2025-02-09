@@ -4,6 +4,7 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
 from django.views import View
 from django.views.generic import ListView, DetailView
+from django.http.response import JsonResponse
 
 
 from shop.models import Product
@@ -93,6 +94,13 @@ class ProductDetailView(IsAuthenticatedMixin,DetailView):
     template_name = 'product_detail.html'
     context_object_name = 'product'
 
-    def get_object(self):
+    def get_queryset(self):
         qs=super().get_queryset()
         return qs.prefetch_related("productimage_set")
+
+class CartView(View):
+    @staticmethod
+    def post(reqeust: HttpRequest):
+        return JsonResponse({"success": True})
+
+
