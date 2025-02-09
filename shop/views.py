@@ -21,7 +21,13 @@ class MainView(IsAuthenticatedMixin, ListView):
         qs = super().get_queryset()
         return qs.prefetch_related("productimage_set")
 
-
+class IsAuthenticatedMixin:
+    def register_page(request: HttpRequest):
+        if request.method == "POST":
+            form = CustomUserCreationForm(request.POST)
+            if form.is_valid():
+                form.save()
+                return redirect("main-page")
 
 class AllProductsView(ListView):
     model = Product
