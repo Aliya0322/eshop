@@ -6,10 +6,9 @@
 {% block content %}
 <script>
 window.addEventListener('load', function() {
-    let toCartBtn = document.getElementById("add-to-cart");
-        increase = document.getElementById("increase");
-        decrease = document.getElementById("decrease");
-        counter = document.getElementById("counter");
+    let increase = document.getElementById("increase");
+    let decrease = document.getElementById("decrease");
+    let counter = document.getElementById("counter");
 
     function getCookie(name) {
         let cookieValue = null;
@@ -28,36 +27,56 @@ window.addEventListener('load', function() {
 
     const csrftoken = getCookie('csrftoken');
 
-    toCartBtn.addEventListener("click", function(event) {
-        event.preventDefault(); // Отменяем стандартное действие кнопки
-
-        fetch(`{% url "cart" %}`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRFTOKEN": csrftoken
-            },
-            body: JSON.stringify({
-                "productId": {{ product.id }}
-            })
-        })
-        .then(response => response.json())
-        .then(data => console.log(data))
-        .catch(error => console.error("Ошибка:", error));
-    });
     increase.onclick = function () {
-    let value = parseInt(counter.innerHTML);
-    if (isNaN(value)) value = 0;  // Проверяем, является ли значение числом
-    if(value < {{ product.stock }}) value++;
-    counter.innerHTML = value.toString();
-};
-decrease.onclick = function () {
-    let value = parseInt(counter.innerHTML);
-    if (isNaN(value)) value = 0;
-    if(value>0) value--;
-    counter.innerHTML = value.toString();
-};
+        let value = parseInt(counter.innerHTML);
+        if (isNaN(value)) value = 0;
+        if (value < {{ product.stock }}) value++;
+        counter.innerHTML = value.toString();
+    };
 
+    decrease.onclick = function () {
+        let value = parseInt(counter.innerHTML);
+        if (isNaN(value)) value = 0;
+        if (value > 0) value--;
+        counter.innerHTML = value.toString();
+    };
+
+    fetch("{% url 'cart' product.id %}")
+    .then(response => {
+        if (!response.ok) {
+            displayCartButton(false);
+             return response.json();
+        } else {
+        displayCartButton(true);
+        }
+    })
+    .then(response => {
+        console.log(response);
+    })
+    .catch(error => {
+        console.error('Ошибка при запросе:', error);
+    });
+
+    function displayCartButton(isRemove) {
+        let infoContainer = document.querySelector(".info-container");
+
+        let cartButton = document.createElement("a");
+
+        if (!isRemove) {
+            cartButton.className = "btn btn-danger";
+            cartButton.id = "add-to-cart";
+            cartButton.type = "button";
+            cartButton.innerHTML = "Добавить в корзину";
+        } else {
+            cartButton.className = "btn btn-outline-danger";
+            cartButton.id = "add-to-cart";
+            cartButton.type = "button";
+            cartButton.innerHTML = "Удалить из корзины";
+
+        }
+
+        infoContainer.appendChild(cartButton);
+    }
 });
 </script>
 
@@ -76,7 +95,6 @@ decrease.onclick = function () {
             <b id="counter">0</b>
             <button class="btn btn-light" id="increase">+</button>
         </div>
-        <button type="button" class="btn btn-danger" id="add-to-cart">Добавить в корзину</button> <!-- Исправлено -->
     </div>
 </div>
 {% endblock content %}

@@ -7,6 +7,7 @@ from django.views.generic import ListView, DetailView
 from django.http.response import JsonResponse
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.utils.decorators import method_decorator
+from mistralai_azure.utils import retry
 
 from shop.models import Product
 from datetime import datetime
@@ -94,6 +95,26 @@ class ProductDetailView(IsAuthenticatedMixin, DetailView):
 
 
 class CartView(View):
+    @staticmethod
+    def get(request: HttpRequest, product_id:int):
+        cart = request.session.get("cart")
+
+        if cart is None:
+            return JsonResponse(status=404)
+
+        if product_id not in cart:
+            return JsonResponse(status=404)
+
+        return JsonResponse ({"success": True}, status=200)
+
+
+
+
+
+
+
+
+
     @staticmethod
     def post(request: HttpRequest):
         return JsonResponse({"success": True})
