@@ -7,6 +7,9 @@
 <script>
 window.addEventListener('load', function() {
     let toCartBtn = document.getElementById("add-to-cart");
+        increase = document.getElementById("increase");
+        decrease = document.getElementById("decrease");
+        counter = document.getElementById("counter");
 
     function getCookie(name) {
         let cookieValue = null;
@@ -42,6 +45,19 @@ window.addEventListener('load', function() {
         .then(data => console.log(data))
         .catch(error => console.error("Ошибка:", error));
     });
+    increase.onclick = function () {
+    let value = parseInt(counter.innerHTML);
+    if (isNaN(value)) value = 0;  // Проверяем, является ли значение числом
+    if(value < {{ product.stock }}) value++;
+    counter.innerHTML = value.toString();
+};
+decrease.onclick = function () {
+    let value = parseInt(counter.innerHTML);
+    if (isNaN(value)) value = 0;
+    if(value>0) value--;
+    counter.innerHTML = value.toString();
+};
+
 });
 </script>
 
@@ -55,6 +71,11 @@ window.addEventListener('load', function() {
         <h1>{{ product.title }}</h1>  <!-- Исправлено -->
         <p>{{ product.description }}</p>
         <h3>{{ product.price }} руб.</h3>
+        <div class="counter-block">
+            <button class="btn btn-light" id="decrease">-</button>
+            <b id="counter">0</b>
+            <button class="btn btn-light" id="increase">+</button>
+        </div>
         <button type="button" class="btn btn-danger" id="add-to-cart">Добавить в корзину</button> <!-- Исправлено -->
     </div>
 </div>

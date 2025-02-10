@@ -5,7 +5,8 @@ from django.contrib import messages
 from django.views import View
 from django.views.generic import ListView, DetailView
 from django.http.response import JsonResponse
-
+from django.views.decorators.csrf import ensure_csrf_cookie
+from django.utils.decorators import method_decorator
 
 from shop.models import Product
 from datetime import datetime
@@ -22,13 +23,6 @@ class MainView(IsAuthenticatedMixin, ListView):
         qs = super().get_queryset()
         return qs.prefetch_related("productimage_set")
 
-class IsAuthenticatedMixin:
-    def register_page(request: HttpRequest):
-        if request.method == "POST":
-            form = CustomUserCreationForm(request.POST)
-            if form.is_valid():
-                form.save()
-                return redirect("main-page")
 
 class AllProductsView(ListView):
     model = Product
@@ -40,7 +34,7 @@ class AllProductsView(ListView):
         context['current_time'] = datetime.now()
         return context
 
-
+@method_decorator(ensure_csrf_cookie, name="dispatch")
 class RegistrationView(View):
     @staticmethod
     def get(request: HttpRequest):
@@ -67,7 +61,7 @@ class LoginView(View):
     def post(request: HttpRequest):
         form = UserAuthForm(request.POST)
         if form.is_valid():
-            username = form.cleaned_data['username']  # Используем [] для доступа к данным
+            username = form.cleaned_data['username']
             password = form.cleaned_data['password']
             user = authenticate(request, username=username, password=password)
 
@@ -76,7 +70,6 @@ class LoginView(View):
                 return redirect('main-page')
             else:
                 messages.error(request, 'Неверное имя пользователя или пароль')
-
         else:
             messages.error(request, form.errors)
 
@@ -89,18 +82,18 @@ def logout_user(request: HttpRequest):
     return redirect('main-page')
 
 
-class ProductDetailView(IsAuthenticatedMixin,DetailView):
+@method_decorator(ensure_csrf_cookie, name="dispatch")
+class ProductDetailView(IsAuthenticatedMixin, DetailView):
     model = Product
     template_name = 'product_detail.html'
     context_object_name = 'product'
 
     def get_queryset(self):
-        qs=super().get_queryset()
+        qs = super().get_queryset()
         return qs.prefetch_related("productimage_set")
+
 
 class CartView(View):
     @staticmethod
-    def post(reqeust: HttpRequest):
+    def post(request: HttpRequest):
         return JsonResponse({"success": True})
-
-
