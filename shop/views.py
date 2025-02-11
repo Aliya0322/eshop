@@ -1,3 +1,6 @@
+import json
+from itertools import product
+
 from django.shortcuts import render, redirect
 from django.http import HttpRequest
 from django.contrib.auth import login, authenticate, logout
@@ -7,7 +10,7 @@ from django.views.generic import ListView, DetailView
 from django.http.response import JsonResponse
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.utils.decorators import method_decorator
-from mistralai_azure.utils import retry
+
 
 from shop.models import Product
 from datetime import datetime
@@ -96,25 +99,50 @@ class ProductDetailView(IsAuthenticatedMixin, DetailView):
 
 class CartView(View):
     @staticmethod
-    def get(request: HttpRequest, product_id:int):
-        cart = request.session.get("cart")
+    def get(request: HttpRequest, product_id: int):
+        cart = request.session.get("cart", {})
 
-        if cart is None:
-            return JsonResponse(status=404)
+        if not cart:
+            return JsonResponse({"error": "Cart is empty"}, status=404)
 
-        if product_id not in cart:
-            return JsonResponse(status=404)
+        if str(product_id) not in cart:
+            return JsonResponse({"error": "Product not found in cart"}, status=404)
 
-        return JsonResponse ({"success": True}, status=200)
-
-
-
-
-
-
-
-
+        return JsonResponse({"quantity": cart[str(product_id)]}, status=200)
 
     @staticmethod
     def post(request: HttpRequest):
-        return JsonResponse({"success": True})
+        try:
+            data = json.loads(request.body.decode('utf-8'))
+            product_id = str(data["productId"])
+            quantity = int(data["quantity"])
+
+            cart = request.session.get("cart", {})
+            if product_id in cart:
+                cart[product_id] += quantity
+            else:
+                cart[product_id] = quantity
+
+            request.session["cart"] = cart
+            return JsonResponse({"success": True}, status=200)
+
+        except (KeyError, ValueError, json.JSONDecodeError) as e:
+            return JsonResponse({"error": str(e)}, status=400)
+
+    @staticmethod
+    def delete(request: HttpRequest, product_id: int):
+        cart = request.session.get("cart", {})
+
+        if not cart:
+            return JsonResponse({"error": "Cart is empty"}, status=404)
+
+        product_id = str(product_id)
+        if product_id not in cart:
+            return JsonResponse({"error": "Product not found in cart"}, status=404)
+
+        del cart[product_id]
+        request.session["cart"] = cart
+        return JsonResponse({}, status=204)
+
+
+
