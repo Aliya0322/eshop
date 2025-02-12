@@ -103,10 +103,10 @@ class CartView(View):
         cart = request.session.get("cart", {})
 
         if not cart:
-            return JsonResponse({"error": "Cart is empty"}, status=404)
+            return JsonResponse({"detail": "Cart is empty"}, status=404)
 
         if str(product_id) not in cart:
-            return JsonResponse({"error": "Product not found in cart"}, status=404)
+            return JsonResponse({"detail": "Product not found in cart"}, status=404)
 
         return JsonResponse({"quantity": cart[str(product_id)]}, status=200)
 
@@ -134,11 +134,11 @@ class CartView(View):
         cart = request.session.get("cart")
 
         if not cart:
-            return JsonResponse({"error": "Cart is empty"}, status=404)
+            return JsonResponse({"detail": "Cart is empty"}, status=404)
 
         product_id = str(product_id)
         if product_id not in cart:
-            return JsonResponse({"error": "Product not found in cart"}, status=404)
+            return JsonResponse({"detail": "Product not found in cart"}, status=404)
 
         del cart[product_id]
         request.session.update({"cart": cart})
