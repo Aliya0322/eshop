@@ -44,20 +44,21 @@ window.addEventListener('load', function() {
     fetch(`{% url "cart" product.id %}`)
         .then(response => {
             if (!response.ok) {
-                displayCartButton(false);
-                return response.json();
-            } else {
-                displayCartButton(true);
-                return response.json();
+                throw new Error('Network response was not ok');
             }
+            return response.json();
         })
-        .then(response => {
-            if (response.quantity) {
-                counter.innerHTML = response.quantity.toString();
+        .then(data => {
+            if (data.quantity) {
+                counter.innerHTML = data.quantity.toString();
+                displayCartButton(true);
+            } else {
+                displayCartButton(false);
             }
         })
         .catch(error => {
             console.error('Ошибка при запросе:', error);
+            displayCartButton(false);
         });
 
     function displayCartButton(isRemove) {
@@ -101,11 +102,19 @@ window.addEventListener('load', function() {
             },
             body: JSON.stringify(body)
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
         .then(data => {
             console.log(data);
-            location.reload();
+            displayCartButton(true);
         })
+        .catch(error => {
+            console.error('Ошибка при добавлении в корзину:', error);
+        });
     }
 
     function removeFromCart() {
@@ -118,18 +127,19 @@ window.addEventListener('load', function() {
         })
         .then(response => {
             if (!response.ok) {
-                alert("Something went wrong");
-            } else {
-                displayCartButton(false);
+                throw new Error('Network response was not ok');
             }
+            return response.json();
         })
         .then(data => {
             console.log(data);
-            location.reload();
+            displayCartButton(false);
         })
+        .catch(error => {
+            console.error('Ошибка при удалении из корзины:', error);
+        });
     }
 });
-
 </script>
 
 
