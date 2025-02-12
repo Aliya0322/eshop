@@ -41,28 +41,32 @@ window.addEventListener('load', function() {
         counter.innerHTML = value.toString();
     };
 
-    fetch("{% url 'cart' product.id %}")
-    .then(response => {
-        if (!response.ok) {
-            displayCartButton(false);
-            throw new Error("Товар отсутствует в корзине");
-        }
-        return response.json();
-    })
-    .then(response => {
-        if (response.quantity !== undefined) {
-            counter.innerHTML = response.quantity.toString();
-            displayCartButton(true);
-        } else {
-            displayCartButton(false);
-        }
-    })
-    .catch(error => {
-        console.error('Ошибка при запросе:', error);
-    });
+    fetch(`{% url "cart" product.id %}`)
+        .then(response => {
+            if (!response.ok) {
+                displayCartButton(false);
+                return response.json();
+            } else {
+                displayCartButton(true);
+                return response.json();
+            }
+        })
+        .then(response => {
+            if (response.quantity) {
+                counter.innerHTML = response.quantity.toString();
+            }
+        })
+        .catch(error => {
+            console.error('Ошибка при запросе:', error);
+        });
 
     function displayCartButton(isRemove) {
         let infoContainer = document.querySelector(".info-container");
+
+        let oldButton = infoContainer.querySelector("#add-to-cart, #remove-from-cart");
+        if (oldButton) {
+            infoContainer.removeChild(oldButton);
+        }
 
         let cartButton = document.createElement("a");
 
@@ -89,7 +93,7 @@ window.addEventListener('load', function() {
             quantity: parseInt(counter.innerHTML),
         };
 
-        fetch (`{% url 'cart' %}`, {
+        fetch(`{% url 'cart' %}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -100,29 +104,35 @@ window.addEventListener('load', function() {
         .then(response => response.json())
         .then(data => {
             console.log(data);
-            location.reload();  // Обновляем страницу после добавления
+            location.reload();
         })
-        .catch(error => console.error("Ошибка при добавлении:", error));
     }
 
     function removeFromCart() {
-        fetch (`{% url 'cart' product.id %}`, {
+        fetch(`{% url 'cart' product.id %}`, {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json",
                 "X-CSRFToken": csrftoken
             }
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                alert("Something went wrong");
+            } else {
+                displayCartButton(false);
+            }
+        })
         .then(data => {
             console.log(data);
-            location.reload();  // Обновляем страницу после удаления
+            location.reload();
         })
-        .catch(error => console.error("Ошибка при удалении:", error));
     }
 });
 
 </script>
+
+
 <div class="product-container">
     <div class="image-container">
         {% for image in product.productimage_set.all %}
@@ -130,7 +140,7 @@ window.addEventListener('load', function() {
         {% endfor %}
     </div>
     <div class="info-container">
-        <h1>{{ product.title }}</h1>  <!-- Исправлено -->
+        <h1>{{ product.title }}</h1>
         <p>{{ product.description }}</p>
         <h3>{{ product.price }} руб.</h3>
         <div class="counter-block">

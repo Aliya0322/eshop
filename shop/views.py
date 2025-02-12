@@ -131,7 +131,7 @@ class CartView(View):
 
     @staticmethod
     def delete(request: HttpRequest, product_id: int):
-        cart = request.session.get("cart", {})
+        cart = request.session.get("cart")
 
         if not cart:
             return JsonResponse({"error": "Cart is empty"}, status=404)
@@ -141,7 +141,7 @@ class CartView(View):
             return JsonResponse({"error": "Product not found in cart"}, status=404)
 
         del cart[product_id]
-        request.session["cart"] = cart
+        request.session.update({"cart": cart})
         return JsonResponse({}, status=204)
 
 
