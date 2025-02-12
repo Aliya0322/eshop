@@ -3,6 +3,7 @@ from itertools import product
 
 from django.shortcuts import render, redirect
 from django.http import HttpRequest
+from django.db.models import F, QuerySet, Value
 from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
 from django.views import View
@@ -10,7 +11,6 @@ from django.views.generic import ListView, DetailView
 from django.http.response import JsonResponse
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.utils.decorators import method_decorator
-
 
 from shop.models import Product
 from datetime import datetime
@@ -37,6 +37,7 @@ class AllProductsView(ListView):
         context = super().get_context_data(**kwargs)
         context['current_time'] = datetime.now()
         return context
+
 
 @method_decorator(ensure_csrf_cookie, name="dispatch")
 class RegistrationView(View):
@@ -93,8 +94,16 @@ class ProductDetailView(IsAuthenticatedMixin, DetailView):
     context_object_name = 'product'
 
     def get_queryset(self):
-        qs = super().get_queryset()
+        qs: QuerySet[Product] = super().get_queryset()
+        if self.request.discount:
+            discount = 100
+            qs = qs.annotate(discount_price=F('price') - Value(discount))
         return qs.prefetch_related("productimage_set")
+
+    def get_context_data(self, **kwargs):
+        cd = super().get_context_data(**kwargs)
+        cd["discount"] = self.request.discount
+        return cd
 
 
 class CartView(View):
@@ -145,4 +154,30 @@ class CartView(View):
         return JsonResponse({}, status=204)
 
 
+class ShowCartView(View):
+    def get(self, request: HttpRequest):
+        cart = request.session.get("cart", {})
 
+        if not cart:
+            return JsonResponse({"detail": "Cart is empty"}, status=404)
+
+        product_ids = cart.keys()
+
+        discount = 100
+        products = Product.objects.filter(id__in=product_ids).annotate(
+            discount_price=F("price") - Value(discount)
+        )
+
+        if request.discount:
+            product_quantity_cart = {
+                product: (cart.get(str(product.id), 0), cart.get(str(product.id), 0) * product.discount_price)
+                for product in products
+            }
+        else:
+            product_quantity_cart = {
+                product: (cart.get(str(product.id), 0), cart.get(str(product.id), 0) * product.price)
+                for product in products
+            }
+
+        return render(request, "show_cart.html",
+                      context={"cart": product_quantity_cart, "discount": discount})

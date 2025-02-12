@@ -27,7 +27,8 @@ from shop.views import (MainView,
                         logout_user,
                         RegistrationView,
                         ProductDetailView,
-                        CartView)
+                        CartView,
+                        ShowCartView)
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -42,6 +43,7 @@ urlpatterns = [
     path('products/<int:pk>', ProductDetailView.as_view(), name='product-detail'),
     path('cart/', CartView.as_view(), name="cart"),
     path('cart/<int:product_id>/', CartView.as_view(), name="cart"),
+    path('showcart/', ShowCartView.as_view(), name="showcart")
 
 ]
 

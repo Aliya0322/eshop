@@ -153,7 +153,11 @@ window.addEventListener('load', function() {
     <div class="info-container">
         <h1>{{ product.title }}</h1>
         <p>{{ product.description }}</p>
+        {% if discount %}
+        <h3>{{ product.discount_price }} руб.</h3>
+        {% else %}
         <h3>{{ product.price }} руб.</h3>
+        {% endif %}
         <div class="counter-block">
             <button class="btn btn-light" id="decrease">-</button>
             <b id="counter">0</b>
