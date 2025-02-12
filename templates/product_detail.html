@@ -125,15 +125,16 @@ window.addEventListener('load', function() {
                 "X-CSRFToken": csrftoken
             }
         })
-        .then(response => {
+         .then(response => {
             if (!response.ok) {
-                throw new Error('Network response was not ok');
+                alert("Something went wrong");
+            } else {
+                displayCartButton(false);
             }
-            return response.json();
         })
         .then(data => {
             console.log(data);
-            displayCartButton(false);
+            location.reload();
         })
         .catch(error => {
             console.error('Ошибка при удалении из корзины:', error);
