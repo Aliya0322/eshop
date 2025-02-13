@@ -1,5 +1,5 @@
 import json
-from itertools import product
+
 
 from django.shortcuts import render, redirect
 from django.http import HttpRequest
@@ -94,10 +94,19 @@ class ProductDetailView(IsAuthenticatedMixin, DetailView):
     context_object_name = 'product'
 
     def get_queryset(self):
-        qs: QuerySet[Product] = super().get_queryset()
-        if self.request.discount:
-            discount = 100
-            qs = qs.annotate(discount_price=F('price') - Value(discount))
+        qs = super().get_queryset()
+        discount = 100
+        increase = 100
+
+        if self.request.user.is_authenticated:
+            qs = qs.annotate(
+                discount_price=F("price") - Value(discount)
+            )
+        else:
+            qs = qs.annotate(
+                increased_price=F("price") + Value(increase)
+            )
+
         return qs.prefetch_related("productimage_set")
 
     def get_context_data(self, **kwargs):
@@ -162,22 +171,35 @@ class ShowCartView(View):
             return JsonResponse({"detail": "Cart is empty"}, status=404)
 
         product_ids = cart.keys()
-
         discount = 100
+        increase = 100
+
         products = Product.objects.filter(id__in=product_ids).annotate(
-            discount_price=F("price") - Value(discount)
+            discount_price=F("price") - Value(discount),
+            increased_price=F("price") + Value(increase)
         )
 
-        if request.discount:
+        if request.user.is_authenticated:
             product_quantity_cart = {
-                product: (cart.get(str(product.id), 0), cart.get(str(product.id), 0) * product.discount_price)
-                for product in products
-            }
-        else:
-            product_quantity_cart = {
-                product: (cart.get(str(product.id), 0), cart.get(str(product.id), 0) * product.price)
+                product: (
+                    cart.get(str(product.id), 0),
+                    cart.get(str(product.id), 0) * product.discount_price)
                 for product in products
             }
 
-        return render(request, "show_cart.html",
-                      context={"cart": product_quantity_cart, "discount": discount})
+        else:
+            product_quantity_cart = {
+                product: (
+                    cart.get(str(product.id), 0),
+                    cart.get(str(product.id), 0) * (product.increased_price)
+                )
+                for product in products
+            }
+
+        total_sum = sum(quantity_price[1] for quantity_price in product_quantity_cart.values())
+
+        return render(request, "show_cart.html", context={
+            "cart": product_quantity_cart,
+            "discount": discount if request.user.is_authenticated else 0,
+            "total_sum": total_sum
+        })

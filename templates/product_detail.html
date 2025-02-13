@@ -156,7 +156,7 @@ window.addEventListener('load', function() {
         {% if discount %}
         <h3>{{ product.discount_price }} руб.</h3>
         {% else %}
-        <h3>{{ product.price }} руб.</h3>
+        <h3>{{ product.increased_price }} руб.</h3>
         {% endif %}
         <div class="counter-block">
             <button class="btn btn-light" id="decrease">-</button>
